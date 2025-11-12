@@ -1,0 +1,952 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Presentación: Implementación de OKRs y KPIs</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            colors: {
+              'brand-primary': '#0D47A1', // Dark Blue
+              'brand-secondary': '#1565C0', // Medium Blue
+              'brand-accent': '#26A69A', // Teal
+              'brand-light': '#F5F5F5', // Light Gray
+              'brand-dark': '#212121', // Almost Black
+            },
+            keyframes: {
+              fadeIn: {
+                '0%': { opacity: '0' },
+                '100%': { opacity: '1' },
+              },
+              slideInFromRight: {
+                '0%': { transform: 'translateX(20px)', opacity: '0' },
+                '100%': { transform: 'translateX(0)', opacity: '1' },
+              }
+            },
+            animation: {
+              'fade-in': 'fadeIn 0.7s ease-in-out',
+              'slide-in': 'slideInFromRight 0.5s ease-out',
+            }
+          },
+        },
+      }
+    </script>
+    <script type="importmap">
+    {
+      "imports": {
+        "react": "https://esm.sh/react@18.2.0",
+        "react-dom/client": "https://esm.sh/react-dom@18.2.0/client"
+      }
+    }
+    </script>
+</head>
+<body class="bg-brand-light">
+    <div id="root"></div>
+    <script type="module">
+        import React, { useState, useCallback } from 'react';
+        import ReactDOM from 'react-dom/client';
+
+        const ArrowLeftIcon = () => (
+          React.createElement('svg', { xmlns: "http://www.w3.org/2000/svg", className: "h-5 w-5", fill: "none", viewBox: "0 0 24 24", stroke: "currentColor" },
+            React.createElement('path', { strokeLinecap: "round", strokeLinejoin: "round", strokeWidth: 2, d: "M10 19l-7-7m0 0l7-7m-7 7h18" })
+          )
+        );
+
+        const ArrowRightIcon = () => (
+          React.createElement('svg', { xmlns: "http://www.w3.org/2000/svg", className: "h-5 w-5", fill: "none", viewBox: "0 0 24 24", stroke: "currentColor" },
+            React.createElement('path', { strokeLinecap: "round", strokeLinejoin: "round", strokeWidth: 2, d: "M14 5l7 7m0 0l-7 7m7-7H3" })
+          )
+        );
+        
+        const ProgressBar = ({ current, total }) => {
+          const percentage = (current / total) * 100;
+          return (
+            React.createElement('div', { className: "w-full bg-gray-200 rounded-full h-2.5" },
+              React.createElement('div', {
+                className: "bg-brand-accent h-2.5 rounded-full transition-all duration-500 ease-out",
+                style: { width: `${percentage}%` }
+              })
+            )
+          );
+        };
+
+        const slideData = [
+          {
+            id: 1,
+            title: 'Implementación Estratégica de OKRs y KPIs',
+            content: (
+              React.createElement('div', { className: "text-center" },
+                React.createElement('h2', { className: "text-2xl text-brand-secondary mb-12" }, "Alineación, Medición y Compensación"),
+                React.createElement('div', { className: "mt-12" },
+                  React.createElement('svg', { className: "w-24 h-24 mx-auto text-brand-primary", fill: "none", stroke: "currentColor", viewBox: "0 0 24 24", xmlns: "http://www.w3.org/2000/svg" }, React.createElement('path', { strokeLinecap: "round", strokeLinejoin: "round", strokeWidth: "2", d: "M9 19v-6a2 2 0 012-2h2a2 2 0 012 2v6m-8-12V7a2 2 0 012-2h4a2 2 0 012 2v2m-6 8h.01M5 21h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v14a2 2 0 002 2z" }))
+                )
+              )
+            ),
+          },
+          {
+            id: 2,
+            title: 'Agenda',
+            content: (
+              React.createElement('ul', { className: "space-y-4 text-lg list-disc list-inside text-gray-700" },
+                React.createElement('li', { className: "animate-slide-in", style: { animationDelay: '100ms' } }, "¿Qué son los OKRs y KPIs?"),
+                React.createElement('li', { className: "animate-slide-in", style: { animationDelay: '200ms' } }, "La Sinergia y Ejemplos Prácticos"),
+                React.createElement('li', { className: "animate-slide-in", style: { animationDelay: '300ms' } }, "Fases y Hoja de Ruta de Implementación"),
+                React.createElement('li', { className: "animate-slide-in", style: { animationDelay: '400ms' } }, "Diagnóstico y Propuesta de Evolución"),
+                React.createElement('li', { className: "animate-slide-in", style: { animationDelay: '500ms' } }, "Modelos de Compensación"),
+                React.createElement('li', { className: "animate-slide-in", style: { animationDelay: '600ms' } }, "Próximos Pasos")
+              )
+            ),
+          },
+          {
+            id: 3,
+            title: '¿Qué son los KPIs?',
+            content: (
+              React.createElement('div', null,
+                React.createElement('h3', { className: "text-xl font-semibold text-brand-secondary mb-3" }, "Indicadores Clave de Rendimiento"),
+                React.createElement('p', { className: "mb-4" }, 'Miden la salud y el rendimiento de procesos existentes ("Business as Usual"). Nos dicen cómo estamos operando.'),
+                React.createElement('div', { className: "bg-blue-50 p-4 rounded-lg" },
+                  React.createElement('p', { className: "font-semibold text-blue-800" }, "Ejemplos (Contexto Pre-ERP):"),
+                  React.createElement('ul', { className: "list-disc list-inside mt-2 text-blue-700" },
+                    React.createElement('li', null, "Ingresos Mensuales Recurrentes (MRR)"),
+                    React.createElement('li', { className: "font-semibold" }, "Tiempo de Cierre Contable Manual (Finanzas)"),
+                    React.createElement('li', { className: "font-semibold" }, "Tasa de Errores en Pedidos Manuales (Operaciones)"),
+                    React.createElement('li', null, "Satisfacción del Cliente (CSAT)"),
+                    React.createElement('li', null, "Tasa de Rotación de Personal (RH)"),
+                    React.createElement('li', null, "Tasa de Conversión / Bateo (Comercial)")
+                  )
+                )
+              )
+            ),
+          },
+            {
+            id: 4,
+            title: '¿Qué son los OKRs?',
+            content: (
+              React.createElement('div', null,
+                React.createElement('h3', { className: "text-xl font-semibold text-brand-secondary mb-3" }, "Objetivos y Resultados Clave"),
+                React.createElement('p', { className: "mb-4" }, "Marco para establecer metas ambiciosas y medibles. Nos impulsan a cambiar y crecer."),
+                React.createElement('div', { className: "mt-4 mb-6 p-4 bg-gray-50 border-l-4 border-brand-accent rounded-r-lg" },
+                  React.createElement('p', { className: "text-gray-800 italic" },
+                    React.createElement('strong', { className: "not-italic" }, "Analogía del Coche:"), " El ", React.createElement('span', { className: "font-semibold text-brand-accent" }, "OKR"), " es el destino que pones en el GPS. Los ", React.createElement('span', { className: "font-semibold text-brand-secondary" }, "KPIs"), " son el tablero que te muestra la velocidad, gasolina y temperatura del motor."
+                  )
+                ),
+                React.createElement('div', { className: "space-y-4" },
+                    React.createElement('div', { className: "bg-teal-50 p-4 rounded-lg" },
+                        React.createElement('p', null, React.createElement('span', { className: "font-bold text-teal-800" }, "Objetivo: "), "Inspirador y cualitativo. ¿A dónde queremos ir?")
+                    ),
+                    React.createElement('div', { className: "bg-gray-100 p-4 rounded-lg" },
+                        React.createElement('p', null, React.createElement('span', { className: "font-bold text-gray-800" }, "Resultados Clave: "), "Cuantitativos y medibles. ¿Cómo sabremos que llegamos?")
+                    )
+                )
+              )
+            ),
+          },
+          {
+            id: 5,
+            title: 'Cualidades Clave: ¿Qué los hace efectivos?',
+            content: (
+                React.createElement('div', { className: "grid md:grid-cols-2 gap-6 text-sm" },
+                    React.createElement('div', { className: "bg-blue-50 p-4 rounded-lg border-l-4 border-blue-400" },
+                        React.createElement('h3', { className: "text-lg font-bold text-brand-secondary mb-3" }, "Un buen KPI es..."),
+                        React.createElement('ul', { className: "space-y-2 text-blue-800" },
+                            React.createElement('li', null, React.createElement('strong', null, "Medible:"), " Se cuantifica sin ambigüedad (Ej: 85% CSAT)."),
+                            React.createElement('li', null, React.createElement('strong', null, "Relevante:"), " Mide un aspecto crítico para el éxito."),
+                            React.createElement('li', null, React.createElement('strong', null, "Simple:"), " Fácil de entender por todos."),
+                            React.createElement('li', null, React.createElement('strong', null, "Accionable:"), " Inspira una decisión o acción concreta."),
+                            React.createElement('li', null, React.createElement('strong', null, "Periódico:"), " Se monitorea constantemente en el tiempo.")
+                        )
+                    ),
+                    React.createElement('div', { className: "bg-teal-50 p-4 rounded-lg border-l-4 border-teal-400" },
+                        React.createElement('h3', { className: "text-lg font-bold text-brand-accent mb-3" }, "Un buen OKR es..."),
+                        React.createElement('div', null, 
+                          React.createElement('p', { className: "font-semibold text-teal-800" }, "Objetivo (El QUÉ):"),
+                          React.createElement('ul', { className: "list-disc list-inside ml-4 text-teal-700" },
+                              React.createElement('li', null, "Inspirador y Cualitativo."),
+                              React.createElement('li', null, "Significativo y ambicioso.")
+                          )
+                        ),
+                        React.createElement('div', { className: 'mt-3' }, 
+                          React.createElement('p', { className: "font-semibold text-teal-800" }, "Resultados Clave (El CÓMO):"),
+                          React.createElement('ul', { className: "list-disc list-inside ml-4 text-teal-700" },
+                              React.createElement('li', null, "Cuantitativos y Medibles (miden impacto)."),
+                              React.createElement('li', null, "Ambiciosos (lograr el 70% es un éxito)."),
+                              React.createElement('li', null, "Verificables y focalizados (3-5 por objetivo).")
+                          )
+                        )
+                    )
+                )
+            )
+          },
+          {
+            id: 6,
+            title: 'Ejemplo de un OKR Empresarial',
+            content: (
+                React.createElement('div', { className: "bg-brand-primary text-white p-6 rounded-lg shadow-lg" },
+                    React.createElement('h3', { className: "text-xl font-bold mb-4 text-center" }, "Objetivo: Modernizar y formalizar nuestras operaciones para escalar de manera sostenible en 2024."),
+                    React.createElement('ul', { className: "space-y-3" },
+                        React.createElement('li', { className: "flex items-center" }, React.createElement('span', { className: "bg-brand-secondary text-white rounded-full h-8 w-8 text-center leading-8 mr-3 font-bold flex-shrink-0" }, "KR1"), "Implementar el nuevo ERP (Módulos Finanzas y Ops) con 90% de procesos clave migrados para Q4."),
+                        React.createElement('li', { className: "flex items-center" }, React.createElement('span', { className: "bg-brand-secondary text-white rounded-full h-8 w-8 text-center leading-8 mr-3 font-bold flex-shrink-0" }, "KR2"), "Documentar y capacitar al 100% de los equipos en los 10 nuevos procesos transversales para Q3."),
+                        React.createElement('li', { className: "flex items-center" }, React.createElement('span', { className: "bg-brand-secondary text-white rounded-full h-8 w-8 text-center leading-8 mr-3 font-bold flex-shrink-0" }, "KR3"), "Alcanzar el 100% de cumplimiento en las bases legales/fiscales requeridas en México para Q2."),
+                        React.createElement('li', { className: "flex items-center" }, React.createElement('span', { className: "bg-brand-accent text-white rounded-full h-8 w-8 text-center leading-8 mr-3 font-bold flex-shrink-0" }, "KR4"), "Aumentar la tasa de bateo de ventas del 20% al 25% para Q4, aprovechando las nuevas herramientas.")
+                    )
+                )
+            )
+          },
+          {
+            id: 7,
+            title: 'La Sinergia: KPIs vs. OKRs',
+            content: (
+              React.createElement('div', { className: "flex items-center justify-center space-x-4" },
+                React.createElement('div', { className: "flex-1 text-center p-4 bg-blue-100 rounded-lg border border-blue-200" },
+                  React.createElement('h3', { className: "font-bold text-brand-secondary text-lg" }, "KPIs"),
+                  React.createElement('p', { className: "text-sm" }, "El Tablero del Coche"),
+                  React.createElement('p', { className: "mt-2 text-gray-600" }, "Monitorean la salud")
+                ),
+                React.createElement('div', { className: "text-4xl font-bold text-brand-accent" }, "+"),
+                React.createElement('div', { className: "flex-1 text-center p-4 bg-teal-100 rounded-lg border border-teal-200" },
+                  React.createElement('h3', { className: "font-bold text-brand-accent text-lg" }, "OKRs"),
+                  React.createElement('p', { className: "text-sm" }, "El Destino en el GPS"),
+                  React.createElement('p', { className: "mt-2 text-gray-600" }, "Impulsan el cambio")
+                )
+              )
+            ),
+          },
+          {
+            id: 8,
+            title: 'Alineando KPIs con OKRs: Ejemplo del Proyecto ERP',
+            content: (
+                React.createElement('div', { className: "space-y-4" },
+                    React.createElement('p', { className: "text-center text-gray-600 mb-4" }, "Un KPI en rojo no es un fracaso, es una señal para actuar. Los OKRs son la herramienta para esa acción."),
+                    React.createElement('div', { className: "flex flex-col md:flex-row items-center justify-between space-y-2 md:space-y-0 md:space-x-2 text-center" },
+                        React.createElement('div', { className: "flex-1 p-3 bg-blue-50 rounded-lg w-full" },
+                            React.createElement('h4', { className: "font-bold text-blue-800" }, "1. Monitorear KPI"),
+                            React.createElement('p', { className: "text-sm text-blue-700 mt-1" }, "% Satisfacción con Capacitación")
+                        ),
+                        React.createElement('div', { className: "text-2xl text-gray-400" }, "→"),
+                        React.createElement('div', { className: "flex-1 p-3 bg-red-50 rounded-lg w-full" },
+                            React.createElement('h4', { className: "font-bold text-red-800" }, "2. Identificar Problema"),
+                            React.createElement('p', { className: "text-sm text-red-700 mt-1" }, 'La satisfacción con la capacitación inicial de procesos es del 50%.')
+                        ),
+                        React.createElement('div', { className: "text-2xl text-gray-400 mt-2 md:mt-0" }, "→"),
+                         React.createElement('div', { className: "flex-1 p-3 bg-yellow-50 rounded-lg w-full" },
+                            React.createElement('h4', { className: "font-bold text-yellow-800" }, "3. Crear OKR de RH"),
+                             React.createElement('p', { className: "text-sm text-yellow-700 mt-1" }, 'O: Gestionar el cambio para la adopción del ERP. KR: Alcanzar 90% de satisfacción en capacitación.')
+                        ),
+                         React.createElement('div', { className: "text-2xl text-gray-400 mt-2 md:mt-0" }, "→"),
+                        React.createElement('div', { className: "flex-1 p-3 bg-green-50 rounded-lg w-full" },
+                            React.createElement('h4', { className: "font-bold text-green-800" }, "4. Medir Impacto"),
+                             React.createElement('p', { className: "text-sm text-green-700 mt-1" }, "El KPI de satisfacción mejora, apoyando el KR2 de la empresa (Capacitación en procesos).")
+                        )
+                    ),
+                    React.createElement('p', { className: "text-center text-md text-gray-800 italic pt-4" }, "Los KPIs nos dicen ", React.createElement('span', { className: "font-bold" }, "dónde mirar"), ", los OKRs nos dicen ", React.createElement('span', { className: "font-bold" }, "qué cambiar"), ".")
+                )
+            )
+          },
+          {
+            id: 9,
+            title: 'Fases de Implementación',
+            content: (
+              React.createElement('div', { className: "space-y-4" },
+                React.createElement('div', { className: "p-4 bg-gray-100 rounded-lg animate-slide-in" },
+                  React.createElement('h3', { className: "font-bold text-brand-secondary" }, "1. Preparación Estratégica"),
+                  React.createElement('p', { className: "text-sm text-gray-600" }, "Alineación de visión y prioridades a nivel directivo. Capacitación.")
+                ),
+                React.createElement('div', { className: "p-4 bg-gray-100 rounded-lg animate-slide-in", style: { animationDelay: '150ms' } },
+                  React.createElement('h3', { className: "font-bold text-brand-secondary" }, "2. Definición de OKRs"),
+                  React.createElement('p', { className: "text-sm text-gray-600" }, "Cascada desde la empresa hacia los equipos (anuales y trimestrales).")
+                ),
+                React.createElement('div', { className: "p-4 bg-gray-100 rounded-lg animate-slide-in", style: { animationDelay: '300ms' } },
+                  React.createElement('h3', { className: "font-bold text-brand-secondary" }, "3. Seguimiento y Ejecución"),
+                  React.createElement('p', { className: "text-sm text-gray-600" }, "Check-ins semanales para revisar progreso y remover obstáculos.")
+                ),
+                React.createElement('div', { className: "p-4 bg-gray-100 rounded-lg animate-slide-in", style: { animationDelay: '450ms' } },
+                  React.createElement('h3', { className: "font-bold text-brand-secondary" }, "4. Revisión y Aprendizaje"),
+                  React.createElement('p', { className: "text-sm text-gray-600" }, "Revisiones trimestrales para calificar OKRs y planificar el siguiente ciclo.")
+                )
+              )
+            ),
+          },
+          {
+            id: 10,
+            title: 'Hoja de Ruta: Ciclo, Revisiones y Pagos',
+            content: (
+              React.createElement('div', { className: "space-y-4 text-sm" },
+                React.createElement('div', { className: "p-3 bg-blue-50 border-l-4 border-blue-400" },
+                  React.createElement('h3', { className: "font-bold text-brand-secondary" }, "FASE 1: Planificación (Enero)"),
+                  React.createElement('ul', { className: "list-disc list-inside mt-1 text-gray-700" },
+                    React.createElement('li', null, "Dirección define OKRs anuales."),
+                    React.createElement('li', null, "Equipos definen OKRs del Q1 y los alinean."),
+                    React.createElement('li', null, "Kick-off general y comunicación de metas.")
+                  )
+                ),
+                React.createElement('div', { className: "p-3 bg-teal-50 border-l-4 border-teal-400" },
+                  React.createElement('h3', { className: "font-bold text-brand-accent" }, "FASE 2: Ejecución (Ciclos Trimestrales: Feb-Abr, May-Jul, etc.)"),
+                   React.createElement('ul', { className: "list-disc list-inside mt-1 text-gray-700" },
+                    React.createElement('li', null, React.createElement('span', { className: "font-semibold" }, "Revisiones Semanales (Check-ins):"), " Equipos revisan progreso OKR (15-20 min)."),
+                    React.createElement('li', null, React.createElement('span', { className: "font-semibold" }, "Revisión Mensual de KPIs:"), " Dirección monitorea la salud del negocio.")
+                  )
+                ),
+                React.createElement('div', { className: "p-3 bg-yellow-50 border-l-4 border-yellow-500" },
+                  React.createElement('h3', { className: "font-bold text-yellow-800" }, "FASE 3: Evaluación (1ra semana de Mayo para Q1)"),
+                  React.createElement('ul', { className: "list-disc list-inside mt-1 text-gray-700" },
+                    React.createElement('li', null, "Equipos autocalifican OKRs y presentan aprendizajes."),
+                    React.createElement('li', null, "Líderes validan y evalúan desempeño individual (KPIs, competencias).")
+                  )
+                ),
+                 React.createElement('div', { className: "p-3 bg-green-50 border-l-4 border-green-500" },
+                  React.createElement('h3', { className: "font-bold text-green-800" }, "FASE 4: Compensación"),
+                  React.createElement('ul', { className: "list-disc list-inside mt-1 text-gray-700" },
+                    React.createElement('li', null, React.createElement('span', { className: "font-semibold" }, "Pago de Bono Trimestral:"), " Segunda quincena del mes post-cierre (Ej: Bono Q1 se paga en Mayo).")
+                  )
+                )
+              )
+            ),
+          },
+          {
+            id: 11,
+            title: 'Caso Práctico: Despliegue Estratégico',
+            content: (
+               React.createElement('div', { className: "text-center" },
+                React.createElement('h2', { className: "text-2xl text-brand-secondary mb-4" }, "Del Plan a la Ejecución Coordinada"),
+                React.createElement('p', { className: "text-lg text-gray-600" }, "Veamos cómo el objetivo de modernizar la operación se traduce en acción, asegurando que cada área aporte al éxito del proyecto."),
+                React.createElement('div', { className: "mt-8 flex justify-center items-center space-x-2 text-gray-500 text-sm" },
+                    React.createElement('div', { className: "p-4 bg-brand-primary text-white rounded-lg shadow-md" }, "OKR Empresa"),
+                    React.createElement('svg', { className: "w-8 h-8", fill: "none", stroke: "currentColor", viewBox: "0 0 24 24" }, React.createElement('path', { strokeLinecap: "round", strokeLinejoin: "round", strokeWidth: "2", d: "M13 7l5 5m0 0l-5 5m5-5H6" })),
+                    React.createElement('div', { className: "p-4 bg-brand-secondary text-white rounded-lg shadow-md" }, "OKR Dept."),
+                     React.createElement('svg', { className: "w-8 h-8", fill: "none", stroke: "currentColor", viewBox: "0 0 24 24" }, React.createElement('path', { strokeLinecap: "round", strokeLinejoin: "round", strokeWidth: "2", d: "M13 7l5 5m0 0l-5 5m5-5H6" })),
+                    React.createElement('div', { className: "p-4 bg-brand-accent text-white rounded-lg shadow-md" }, "OKR Equipo")
+                )
+            )
+            )
+          },
+          {
+            id: 12,
+            title: 'OKR Estratégico: Modernización y Crecimiento 2024',
+            content: (
+              React.createElement('div', { className: "bg-brand-primary text-white p-6 rounded-lg shadow-lg text-center" },
+                React.createElement('h3', { className: "text-2xl font-bold mb-4" }, "Objetivo: Modernizar nuestras operaciones para escalar y acelerar el crecimiento."),
+                React.createElement('div', { className: "grid md:grid-cols-2 gap-4 mt-6 text-left" },
+                    React.createElement('div', { className: "bg-brand-secondary p-4 rounded-lg" },
+                        React.createElement('p', { className: "font-bold" }, "KR1: Implementar ERP"),
+                        React.createElement('p', { className: "text-sm" }, "90% de procesos clave migrados a nuevo ERP (Finanzas y Ops) para Q4.")
+                    ),
+                    React.createElement('div', { className: "bg-brand-secondary p-4 rounded-lg" },
+                        React.createElement('p', { className: "font-bold" }, "KR2: Formalizar Procesos"),
+                        React.createElement('p', { className: "text-sm" }, "100% de equipos documentan y se capacitan en 10 procesos transversales para Q3.")
+                    ),
+                     React.createElement('div', { className: "bg-brand-secondary p-4 rounded-lg" },
+                        React.createElement('p', { className: "font-bold" }, "KR3: Cumplimiento Legal"),
+                        React.createElement('p', { className: "text-sm" }, "100% de cumplimiento en bases legales/fiscales en México para Q2.")
+                    ),
+                    React.createElement('div', { className: "bg-brand-accent p-4 rounded-lg" },
+                        React.createElement('p', { className: "font-bold" }, "KR4: Aumentar Ventas"),
+                        React.createElement('p', { className: "text-sm" }, "Aumentar la tasa de bateo de ventas del 20% al 25% para Q4.")
+                    )
+                )
+            )
+            )
+          },
+           {
+            id: 13,
+            title: 'Despliegue: Sistemas y Operaciones (El Corazón del Proyecto)',
+            content: (
+               React.createElement('div', { className: "grid grid-cols-1 md:grid-cols-2 gap-6 text-sm" },
+                React.createElement('div', { className: "bg-gray-50 p-4 rounded-lg border-l-4 border-indigo-500" },
+                    React.createElement('h4', { className: "font-bold text-brand-dark text-lg mb-2" }, "Sistemas (IT)"),
+                    React.createElement('p', { className: "font-semibold text-indigo-700" }, "O: Liderar la implementación técnica del nuevo ERP."),
+                    React.createElement('ul', { className: "list-disc list-inside mt-2 space-y-1 text-gray-600" },
+                        React.createElement('li', null, "KR: Puesta en marcha del ambiente productivo del ERP antes del 30 de Sep."),
+                        React.createElement('li', null, "KR: Migrar 100% de datos maestros sin errores críticos.")
+                    ),
+                    React.createElement('p', { className: "text-xs text-gray-500 mt-3 italic" }, "Contribuye a: ", React.createElement('span', { className: "font-bold" }, "KR1 Empresa (Implementar ERP)"))
+                ),
+                React.createElement('div', { className: "bg-gray-50 p-4 rounded-lg border-l-4 border-green-500" },
+                    React.createElement('h4', { className: "font-bold text-brand-dark text-lg mb-2" }, "Operaciones"),
+                    React.createElement('p', { className: "font-semibold text-green-700" }, "O: Asegurar una transición fluida al nuevo ERP."),
+                     React.createElement('ul', { className: "list-disc list-inside mt-2 space-y-1 text-gray-600" },
+                        React.createElement('li', null, "KR: Mapear y rediseñar 5 procesos operativos clave para el ERP antes del 30 de Jun."),
+                        React.createElement('li', null, "KR: Lograr que el 95% del equipo complete la certificación del nuevo sistema.")
+                    ),
+                    React.createElement('p', { className: "text-xs text-gray-500 mt-3 italic" }, "Contribuye a: ", React.createElement('span', { className: "font-bold" }, "KR1 (ERP) y KR2 (Procesos)"))
+                )
+            )
+            )
+          },
+           {
+            id: 14,
+            title: 'Despliegue: Finanzas y RRHH (El Soporte del Cambio)',
+            content: (
+               React.createElement('div', { className: "grid grid-cols-1 md:grid-cols-2 gap-6 text-sm" },
+                React.createElement('div', { className: "bg-gray-50 p-4 rounded-lg border-l-4 border-yellow-500" },
+                    React.createElement('h4', { className: "font-bold text-brand-dark text-lg mb-2" }, "Finanzas y Admin."),
+                    React.createElement('p', { className: "font-semibold text-yellow-700" }, "O: Garantizar integridad financiera y cumplimiento con el ERP."),
+                    React.createElement('ul', { className: "list-disc list-inside mt-2 space-y-1 text-gray-600" },
+                        React.createElement('li', null, "KR: Reducir el tiempo de cierre contable de 10 a 5 días con el ERP."),
+                        React.createElement('li', null, "KR: Completar la configuración fiscal para México en el ERP para el 15 de Mayo.")
+                    ),
+                    React.createElement('p', { className: "text-xs text-gray-500 mt-3 italic" }, "Contribuye a: ", React.createElement('span', { className: "font-bold" }, "KR1 (ERP) y KR3 (Legal)"))
+                ),
+                React.createElement('div', { className: "bg-gray-50 p-4 rounded-lg border-l-4 border-purple-500" },
+                    React.createElement('h4', { className: "font-bold text-brand-dark text-lg mb-2" }, "Recursos Humanos"),
+                    React.createElement('p', { className: "font-semibold text-purple-700" }, "O: Gestionar el cambio y la capacitación para la adopción del sistema."),
+                     React.createElement('ul', { className: "list-disc list-inside mt-2 space-y-1 text-gray-600" },
+                        React.createElement('li', null, "KR: Alcanzar un 90% de satisfacción en la capacitación del ERP."),
+                        React.createElement('li', null, "KR: Reducir 50% incidencias de soporte por \"error de usuario\" post-lanzamiento.")
+                    ),
+                    React.createElement('p', { className: "text-xs text-gray-500 mt-3 italic" }, "Contribuye a: ", React.createElement('span', { className: "font-bold" }, "KR1 (ERP) y KR2 (Procesos)"))
+                )
+            )
+            )
+          },
+           {
+            id: 15,
+            title: 'Despliegue: Comercial y Marketing (La Cara al Cliente)',
+            content: (
+               React.createElement('div', { className: "grid grid-cols-1 md:grid-cols-2 gap-6 text-sm" },
+                React.createElement('div', { className: "bg-gray-50 p-4 rounded-lg border-l-4 border-blue-500" },
+                    React.createElement('h4', { className: "font-bold text-brand-dark text-lg mb-2" }, "Comercial"),
+                    React.createElement('p', { className: "font-semibold text-blue-700" }, "O: Aumentar la efectividad y velocidad del equipo comercial."),
+                    React.createElement('ul', { className: "list-disc list-inside mt-2 space-y-1 text-gray-600" },
+                        React.createElement('li', { className: "font-bold" }, "KR: Incrementar la tasa de bateo de oportunidades de 20% a 25%."),
+                        React.createElement('li', null, "KR: Reducir el tiempo de generación de cotizaciones en un 30% con el nuevo ERP.")
+                    ),
+                    React.createElement('p', { className: "text-xs text-gray-500 mt-3 italic" }, "Contribuye a: ", React.createElement('span', { className: "font-bold" }, "KR4 (Ventas) y KR1 (ERP)"))
+                ),
+                React.createElement('div', { className: "bg-gray-50 p-4 rounded-lg border-l-4 border-teal-500" },
+                    React.createElement('h4', { className: "font-bold text-brand-dark text-lg mb-2" }, "Marketing"),
+                    React.createElement('p', { className: "font-semibold text-teal-700" }, "O: Asegurar la calidad de los datos de cliente para el ERP."),
+                     React.createElement('ul', { className: "list-disc list-inside mt-2 space-y-1 text-gray-600" },
+                        React.createElement('li', null, "KR: Definir y documentar el Mapeo de Datos del Cliente (CDM) para el 15 de Abril."),
+                        React.createElement('li', null, "KR: Depurar la base de datos de marketing, reduciendo contactos duplicados en un 95%.")
+                    ),
+                    React.createElement('p', { className: "text-xs text-gray-500 mt-3 italic" }, "Contribuye a: ", React.createElement('span', { className: "font-bold" }, "KR1 (ERP)"))
+                )
+            )
+            )
+          },
+          {
+            id: 16,
+            title: '¿Cómo Calificamos los OKRs?',
+            content: (
+              React.createElement('div', null,
+                React.createElement('p', { className: "mb-4 text-center text-base" }, "La calificación mide el ", React.createElement('span', { className: "font-bold" }, "progreso hacia metas ambiciosas"), ", no el éxito o fracaso. Usamos una escala simple de 0% a 100% (o 0.0 a 1.0) para cada Resultado Clave."),
+                React.createElement('div', { className: "grid grid-cols-1 md:grid-cols-2 gap-3" },
+                  React.createElement('div', { className: "p-3 rounded-lg bg-green-50 border border-green-200" },
+                    React.createElement('h4', { className: "font-bold text-base text-green-800" }, "70% - 100% (0.7 - 1.0)"),
+                    React.createElement('p', { className: "text-green-700 mt-1 text-sm" },
+                      React.createElement('span', { className: "font-semibold" }, "Zona Verde: ¡Éxito! "), "Se logró un progreso excepcional en una meta desafiante. Si se alcanza el 100% consistentemente, las metas podrían no ser lo suficientemente ambiciosas."
+                    )
+                  ),
+                  React.createElement('div', { className: "p-3 rounded-lg bg-yellow-50 border border-yellow-200" },
+                    React.createElement('h4', { className: "font-bold text-base text-yellow-800" }, "40% - 60% (0.4 - 0.6)"),
+                    React.createElement('p', { className: "text-yellow-700 mt-1 text-sm" },
+                      React.createElement('span', { className: "font-semibold" }, "Zona Amarilla: Progreso Significativo. "), "Se avanzó considerablemente. Es una oportunidad para aprender qué funcionó y qué no para el siguiente ciclo."
+                    )
+                  ),
+                  React.createElement('div', { className: "p-3 rounded-lg bg-red-50 border border-red-200 col-span-1 md:col-span-2" },
+                    React.createElement('h4', { className: "font-bold text-base text-red-800" }, "Menos de 40% (< 0.4)"),
+                    React.createElement('p', { className: "text-red-700 mt-1 text-sm" },
+                      React.createElement('span', { className: "font-semibold" }, "Zona Roja: Reevaluación Necesaria. "), "Hubo poco progreso. No es un fracaso, sino una señal importante de que el enfoque o el objetivo deben ser reconsiderados fundamentalmente. ¿Era la meta correcta? ¿Tuvimos los recursos?"
+                    )
+                  )
+                ),
+                React.createElement('p', { className: "mt-4 text-center text-sm text-gray-800 italic" }, "La conversación post-calificación sobre los ", React.createElement('span', { className: "font-bold" }, "aprendizajes"), " es más valiosa que el número en sí.")
+              )
+            ),
+          },
+          {
+            id: 17,
+            title: 'Compensación: El Equilibrio entre Ambición y Reconocimiento',
+            content: (
+              React.createElement('div', { className: "text-center" },
+                  React.createElement('div', { className: "mb-6 inline-block p-3 border-4 border-red-500 rounded-lg bg-red-50" },
+                    React.createElement('h3', { className: "text-xl font-bold text-red-700" }, "Regla de Oro:"),
+                    React.createElement('p', { className: "text-lg text-red-900" }, "NO vincular directamente el bono a una fórmula matemática de logro de OKRs.")
+                  ),
+
+                  React.createElement('h4', { className: "text-lg font-semibold text-brand-dark mb-3" }, "Las Consecuencias de una Fórmula Directa:"),
+                  React.createElement('div', { className: "grid md:grid-cols-3 gap-4 text-left text-sm" },
+                      React.createElement('div', { className: "bg-gray-50 p-4 rounded-lg" },
+                        React.createElement('h5', { className: "font-bold text-brand-secondary" }, "1. Mata la Ambición"),
+                        React.createElement('p', { className: "text-gray-600 mt-1" }, "Cuando el bono depende de alcanzar el 100%, la gente no fija metas audaces; fija metas seguras. El objetivo de un OKR es estirar los límites, no asegurar un cheque. Se premia la mediocridad.")
+                      ),
+                      React.createElement('div', { className: "bg-gray-50 p-4 rounded-lg" },
+                         React.createElement('h5', { className: "font-bold text-brand-secondary" }, "2. Destruye la Colaboración"),
+                         React.createElement('p', { className: "text-gray-600 mt-1" }, "Si mi bono depende de mi OKR, ¿por qué ayudaría a otro equipo si eso arriesga mi resultado? Se crean silos y competencia interna en lugar de sinergia para lograr el éxito de la empresa.")
+                      ),
+                      React.createElement('div', { className: "bg-gray-50 p-4 rounded-lg" },
+                        React.createElement('h5', { className: "font-bold text-brand-secondary" }, "3. Promueve \"Jugar para la Métrica\""),
+                        React.createElement('p', { className: "text-gray-600 mt-1" }, "Los equipos se enfocan en alcanzar el número a toda costa, incluso si eso significa tomar atajos, sacrificar la calidad o tomar decisiones perjudiciales a largo plazo. Se optimiza el indicador, no el negocio.")
+                      )
+                  ),
+                   React.createElement('p', { className: "mt-6 text-center text-md text-gray-800 italic" }, "El logro de OKRs es una conversación sobre ", React.createElement('span', { className: "font-bold" }, "impacto y aprendizaje"), ", no un cálculo para un bono.")
+              )
+            ),
+          },
+            {
+            id: 18,
+            title: 'Diagnóstico de la Situación Actual',
+            content: (
+                React.createElement('div', { className: "bg-gray-50 p-6 rounded-lg" },
+                    React.createElement('h3', { className: "text-xl font-semibold text-brand-secondary mb-4 text-center" }, "Análisis del Modelo Vigente"),
+                    React.createElement('ul', { className: "space-y-3 list-disc list-inside text-gray-700" },
+                        React.createElement('li', null, "Bono ", React.createElement('span', { className: "font-semibold" }, "vinculado directamente"), " al cumplimiento de OKRs (80%-120%)."),
+                        React.createElement('li', null, "Volumen elevado: ", React.createElement('span', { className: "font-semibold" }, "5 a 8 objetivos"), " por colaborador."),
+                        React.createElement('li', null, React.createElement('span', { className: "font-semibold" }, "Confusión conceptual:"), " Se mezclan OKRs (metas de cambio) con KPIs (operación diaria)."),
+                        React.createElement('li', null, "Objetivos ", React.createElement('span', { className: "font-semibold" }, "no alineados"), " con la estrategia global de la empresa."),
+                        React.createElement('li', null, React.createElement('span', { className: "font-semibold" }, "Sin visibilidad"), " centralizada (falta de \"control de mando\").")
+                    )
+                )
+            )
+          },
+          {
+            id: 19,
+            title: 'Análisis Crítico: El Modelo de Bonos Actual (Ejemplo RH)',
+            content: (
+                React.createElement('div', { className: "space-y-4 text-sm" },
+                    React.createElement('p', { className: "text-center text-gray-600 italic mb-4" }, "Así se ve un objetivo de RH bajo el sistema actual y por qué es ineficaz."),
+                    React.createElement('div', { className: "bg-gray-100 p-4 rounded-lg" },
+                        React.createElement('h3', { className: "font-bold text-brand-dark text-base mb-2" }, "Objetivo Trimestral (Ejemplo Ficticio):"),
+                        React.createElement('p', { className: "text-gray-700" }, "1. Completar plan de capacitación ERP al 100%. 2. Satisfacción > 85%. 3. Agendar 10 sesiones. 4. Reducir rotación a < 5%. 5. Contratar 2 analistas... (y así hasta 8)."),
+                        React.createElement('p', { className: "text-xs text-gray-500 mt-2" }, React.createElement('span', { className: "font-bold" }, "Bono:"), " Calculado por el % de cumplimiento de esta lista.")
+                    ),
+                    React.createElement('div', { className: "grid md:grid-cols-2 gap-4 pt-2" },
+                        React.createElement('div', { className: "bg-red-50 border border-red-200 p-3 rounded-lg" },
+                            React.createElement('h4', { className: "font-bold text-red-800 text-base" }, "Falla 1: Fomenta Metas Mediocres"),
+                            React.createElement('p', { className: "text-red-700 mt-1" }, "Para asegurar el bono, el incentivo es crear un \"plan de capacitación\" fácil de completar al 100%, en lugar de uno ambicioso y transformador. Se castiga el riesgo.")
+                        ),
+                        React.createElement('div', { className: "bg-yellow-50 border border-yellow-200 p-3 rounded-lg" },
+                            React.createElement('h4', { className: "font-bold text-yellow-800 text-base" }, "Falla 2: Diluye el Impacto"),
+                            React.createElement('p', { className: "text-yellow-700 mt-1" }, 'La tarea "agendar 10 sesiones" tiene el mismo peso que el KPI estratégico "Reducir rotación". El sistema no distingue entre actividad y resultado de alto valor.')
+                        )
+                    ),
+                     React.createElement('div', { className: "bg-blue-50 border border-blue-200 p-3 rounded-lg" },
+                        React.createElement('h4', { className: "font-bold text-blue-800 text-base" }, "Falla 3: Enfoque en Tareas, no en Resultado"),
+                        React.createElement('p', { className: "text-blue-700 mt-1" }, "El sistema premia por \"completar el plan\", sin importar si la gente realmente aprendió, adoptó el sistema o si la capacitación tuvo algún impacto en el negocio. Se convierte en una simple checklist.")
+                    )
+                )
+            )
+          },
+          {
+            id: 20,
+            title: 'Riesgos del Modelo Actual',
+            content: (
+                React.createElement('div', { className: "grid md:grid-cols-2 gap-4 text-center" },
+                    React.createElement('div', { className: "bg-red-50 border border-red-200 p-4 rounded-lg" },
+                        React.createElement('h3', { className: "font-bold text-red-800" }, "Metas Conservadoras"),
+                        React.createElement('p', { className: "text-red-700 text-sm" }, "Para asegurar el bono, los equipos fijan metas fáciles de alcanzar, matando la ambición.")
+                    ),
+                    React.createElement('div', { className: "bg-yellow-50 border border-yellow-200 p-4 rounded-lg" },
+                        React.createElement('h3', { className: "font-bold text-yellow-800" }, "Falta de Foco"),
+                        React.createElement('p', { className: "text-yellow-700 text-sm" }, "Tener 5-8 \"prioridades\" significa no tener ninguna. El esfuerzo se dispersa.")
+                    ),
+                    React.createElement('div', { className: "bg-blue-50 border border-blue-200 p-4 rounded-lg" },
+                        React.createElement('h3', { className: "font-bold text-blue-800" }, "Desalineación Estratégica"),
+                        React.createElement('p', { className: "text-blue-700 text-sm" }, "Equipos exitosos en tareas que no contribuyen a las metas principales de la empresa.")
+                    ),
+                    React.createElement('div', { className: "bg-gray-100 border border-gray-300 p-4 rounded-lg" },
+                        React.createElement('h3', { className: "font-bold text-gray-800" }, "Complejidad y Agotamiento"),
+                        React.createElement('p', { className: "text-gray-700 text-sm" }, "El sistema se vuelve una carga administrativa en lugar de una herramienta ágil.")
+                    )
+                )
+            )
+          },
+          {
+            id: 21,
+            title: 'El Costo de la Desalineación: ¿Por Qué Cambiar?',
+            content: (
+              React.createElement('div', { className: "relative" },
+                React.createElement('div', { className: "grid grid-cols-2 gap-4 text-sm text-center" },
+                  React.createElement('div', { className: "p-4 bg-red-50 border-2 border-red-200 rounded-lg" },
+                    React.createElement('h3', { className: "font-bold text-red-800 text-base mb-2" }, "Modelo Actual: Esfuerzo Aislado"),
+                    React.createElement('svg', { className: "w-12 h-12 mx-auto text-red-400 my-2", viewBox: "0 0 24 24", fill: "none", stroke: "currentColor", strokeWidth: "2", strokeLinecap: "round", strokeLinejoin: "round" },
+                      React.createElement('line', { x1: "21", y1: "12", x2: "23", y2: "12" }), React.createElement('line', { x1: "1", y1: "12", x2: "3", y2: "12" }), React.createElement('line', { x1: "12", y1: "1", x2: "12", y2: "3" }), React.createElement('line', { x1: "12", y1: "21", x2: "12", y2: "23" }), React.createElement('line', { x1: "4.22", y1: "4.22", x2: "5.64", y2: "5.64" }), React.createElement('line', { x1: "18.36", y1: "18.36", x2: "19.78", y2: "19.78" }), React.createElement('line', { x1: "4.22", y1: "19.78", x2: "5.64", y2: "18.36" }), React.createElement('line', { x1: "18.36", y1: "5.64", x2: "19.78", y2: "4.22" })
+                    ),
+                    React.createElement('ul', { className: "list-disc list-inside text-red-700 space-y-1 text-left" },
+                        React.createElement('li', null, "Fuerza de trabajo fragmentada."),
+                        React.createElement('li', null, "Recursos y presupuesto diluidos."),
+                        React.createElement('li', null, "Progreso estratégico estancado.")
+                    ),
+                    React.createElement('p', { className: "mt-3 text-xs text-gray-500 italic" }, "\"Cada quien rema en su propia dirección.\"")
+                  ),
+                  React.createElement('div', { className: "p-4 bg-green-50 border-2 border-green-200 rounded-lg" },
+                    React.createElement('h3', { className: "font-bold text-green-800 text-base mb-2" }, "Modelo Propuesto: Impacto Colectivo"),
+                     React.createElement('svg', { className: "w-12 h-12 mx-auto text-green-500 my-2", viewBox: "0 0 24 24", fill: "none", stroke: "currentColor", strokeWidth: "2", strokeLinecap: "round", strokeLinejoin: "round" },
+                        React.createElement('path', { d: "M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2z" })
+                     ),
+                    React.createElement('ul', { className: "list-disc list-inside text-green-700 space-y-1 text-left" },
+                        React.createElement('li', null, "Energía enfocada en 2-3 prioridades."),
+                        React.createElement('li', null, "Maximización del retorno de inversión."),
+                        React.createElement('li', null, "Aceleración de resultados clave.")
+                    ),
+                     React.createElement('p', { className: "mt-3 text-xs text-gray-500 italic" }, "\"Todos remamos hacia el mismo destino.\"")
+                  )
+                ),
+                React.createElement('div', { className: "text-center mt-4" },
+                  React.createElement('p', { className: "text-base font-semibold text-brand-dark px-6" }, "El cambio no es administrativo, es estratégico. Pasamos de medir ", React.createElement('span', { className: "text-red-600" }, "actividad"), " a medir ", React.createElement('span', { className: "text-green-600" }, "progreso"), " hacia las metas que definen nuestro éxito.")
+                )
+              )
+            )
+          },
+          {
+            id: 22,
+            title: 'Preguntas Guía para Definir OKRs Estratégicos',
+            content: (
+              React.createElement('div', { className: "space-y-4 text-center" },
+                  React.createElement('p', { className: "text-gray-600 italic" }, "Para iniciar la conversación estratégica en el equipo directivo:"),
+                  React.createElement('div', { className: "grid md:grid-cols-2 gap-4 pt-4 text-left" },
+                      React.createElement('div', { className: "p-4 bg-gray-50 border-l-4 border-brand-primary rounded-r-lg" },
+                          React.createElement('p', { className: "font-semibold text-gray-800" }, "Si solo pudiéramos lograr 3 cosas este año, ¿cuáles tendrían el ", React.createElement('span', { className: "text-brand-primary" }, "mayor impacto"), "?")
+                      ),
+                      React.createElement('div', { className: "p-4 bg-gray-50 border-l-4 border-brand-accent rounded-r-lg" },
+                           React.createElement('p', { className: "font-semibold text-gray-800" }, "¿Qué ", React.createElement('span', { className: "text-brand-accent" }, "cambio audaz"), " transformaría nuestra posición en el mercado?")
+                      ),
+                      React.createElement('div', { className: "p-4 bg-gray-50 border-l-4 border-yellow-500 rounded-r-lg" },
+                           React.createElement('p', { className: "font-semibold text-gray-800" }, "¿Dónde enfrentamos el ", React.createElement('span', { className: "text-yellow-600" }, "mayor riesgo"), " u oportunidad desaprovechada?")
+                      ),
+                      React.createElement('div', { className: "p-4 bg-gray-50 border-l-4 border-red-500 rounded-r-lg" },
+                          React.createElement('p', { className: "font-semibold text-gray-800" }, "¿Cómo se ve el éxito en 12 meses, de una forma que ", React.createElement('span', { className: "text-red-600" }, "todos podamos medir"), "?")
+                      )
+                  )
+              )
+            ),
+          },
+          {
+            id: 23,
+            title: 'Propuesta de Evolución',
+            content: (
+                React.createElement('div', { className: "space-y-3" },
+                    React.createElement('div', { className: "p-3 bg-gray-100 rounded-lg" },
+                        React.createElement('h3', { className: "font-bold text-brand-secondary" }, "1. Desacoplar Bono y OKR"),
+                        React.createElement('p', { className: "text-sm text-gray-600" }, "Usar el impacto en OKRs como un ", React.createElement('span', { className: "font-semibold" }, "factor cualitativo"), " en la evaluación de desempeño, no como una fórmula directa.")
+                    ),
+                    React.createElement('div', { className: "p-3 bg-gray-100 rounded-lg" },
+                        React.createElement('h3', { className: "font-bold text-brand-secondary" }, "2. Foco: \"Menos es Más\""),
+                        React.createElement('p', { className: "text-sm text-gray-600" }, "Reducir a ", React.createElement('span', { className: "font-semibold" }, "2-3 OKRs"), " por equipo y por trimestre. Obliga a priorizar lo que realmente importa.")
+                    ),
+                    React.createElement('div', { className: "p-3 bg-gray-100 rounded-lg" },
+                        React.createElement('h3', { className: "font-bold text-brand-secondary" }, "3. Alinear desde la Estrategia"),
+                        React.createElement('p', { className: "text-sm text-gray-600" }, "Definir 3 OKRs anuales para la empresa. Los equipos ", React.createElement('span', { className: "font-semibold" }, "derivan sus OKRs de los de la empresa"), ".")
+                    ),
+                    React.createElement('div', { className: "p-3 bg-gray-100 rounded-lg" },
+                        React.createElement('h3', { className: "font-bold text-brand-secondary" }, "4. Clarificar y Separar"),
+                        React.createElement('p', { className: "text-sm text-gray-600" }, "Crear un ", React.createElement('span', { className: "font-semibold" }, "Dashboard de KPIs"), " (salud del negocio) y un sistema de seguimiento para ", React.createElement('span', { className: "font-semibold" }, "OKRs"), " (metas de crecimiento).")
+                    )
+                )
+            )
+          },
+          {
+            id: 24,
+            title: 'La Neurociencia del Foco: ¿Por qué 2-3 OKRs?',
+            content: (
+              React.createElement('div', { className: "space-y-3 text-sm" },
+                React.createElement('p', { className: "text-center text-gray-600 mb-4 italic" }, "Limitar los OKRs no es una regla arbitraria, sino una estrategia profundamente arraigada en cómo funciona nuestro cerebro."),
+                React.createElement('div', { className: "grid md:grid-cols-2 gap-4" },
+                    React.createElement('div', { className: "bg-blue-50 p-3 rounded-lg border-l-4 border-blue-400" },
+                        React.createElement('h4', { className: "font-bold text-brand-secondary" }, "1. Carga Cognitiva"),
+                        React.createElement('p', { className: "text-gray-700 mt-1" }, "Nuestra memoria de trabajo es finita. Múltiples objetivos la saturan, fragmentando la atención. Con 2-3 OKRs, liberamos \"ancho de banda\" mental para el pensamiento estratégico.")
+                    ),
+                    React.createElement('div', { className: "bg-teal-50 p-3 rounded-lg border-l-4 border-teal-400" },
+                        React.createElement('h4', { className: "font-bold text-brand-accent" }, "2. Costo del Cambio de Contexto"),
+                        React.createElement('p', { className: "text-gray-700 mt-1" }, "Cambiar entre objetivos complejos consume una cantidad desproporcionada de energía cerebral. El foco permite estados de trabajo profundo, generando soluciones más robustas.")
+                    ),
+                    React.createElement('div', { className: "bg-yellow-50 p-3 rounded-lg border-l-4 border-yellow-500" },
+                        React.createElement('h4', { className: "font-bold text-yellow-800" }, "3. El Circuito de la Dopamina"),
+                        React.createElement('p', { className: "text-gray-700 mt-1" }, "Con demasiados OKRs, el progreso se diluye y la motivación cae. Con pocos, cada avance es visible y refuerza el ciclo de logro, liberando dopamina.")
+                    ),
+                    React.createElement('div', { className: "bg-red-50 p-3 rounded-lg border-l-4 border-red-500" },
+                        React.createElement('h4', { className: "font-bold text-red-800" }, "4. Fatiga por Decisión"),
+                        React.createElement('p', { className: "text-gray-700 mt-1" }, "Tener 2-3 prioridades claras elimina la necesidad de decidir constantemente en qué trabajar, preservando la energía mental para las decisiones que importan.")
+                    )
+                ),
+                React.createElement('p', { className: "mt-4 text-center font-semibold text-brand-dark" }, "Alinear la estrategia con nuestra neurociencia es pasar de medir actividad a impulsar un impacto real.")
+              )
+            ),
+          },
+          {
+            id: 25,
+            title: 'Propuesta: El Control de Mando Estratégico (OKRs)',
+            content: (
+                React.createElement('div', { className: 'text-sm' },
+                    React.createElement('p', { className: "text-center text-gray-600 mb-4" }, "Vista para la Dirección. Foco exclusivo en el progreso de las metas estratégicas de la empresa."),
+                    React.createElement('div', { className: 'p-4 bg-brand-primary/5 rounded-lg' },
+                        React.createElement('h4', { className: "font-bold text-brand-dark text-lg text-center mb-4" }, 'O: Modernizar operaciones y acelerar crecimiento'),
+                        React.createElement('div', { className: 'grid md:grid-cols-2 lg:grid-cols-4 gap-4' },
+                            React.createElement('div', { className: 'bg-white p-3 rounded-lg shadow' },
+                                React.createElement('h5', { className: 'font-bold text-brand-secondary' }, 'KR1: Implementar ERP'),
+                                React.createElement(ProgressBar, { current: 75, total: 100 }),
+                                React.createElement('p', { className: 'text-xs mt-2' }, React.createElement('span', { className: 'font-semibold' }, 'Progreso: '), '75%'),
+                                React.createElement('p', { className: 'text-xs' }, React.createElement('span', { className: 'font-semibold' }, 'Status: '), React.createElement('span', { className: 'text-green-600 font-bold' }, 'En Rumbo')),
+                                React.createElement('p', { className: 'text-xs italic text-gray-500 mt-1' }, 'Migración de datos exitosa.')
+                            ),
+                            React.createElement('div', { className: 'bg-white p-3 rounded-lg shadow' },
+                                React.createElement('h5', { className: 'font-bold text-brand-secondary' }, 'KR2: Formalizar Procesos'),
+                                React.createElement(ProgressBar, { current: 60, total: 100 }),
+                                React.createElement('p', { className: 'text-xs mt-2' }, React.createElement('span', { className: 'font-semibold' }, 'Progreso: '), '60%'),
+                                React.createElement('p', { className: 'text-xs' }, React.createElement('span', { className: 'font-semibold' }, 'Status: '), React.createElement('span', { className: 'text-yellow-600 font-bold' }, 'En Riesgo')),
+                                React.createElement('p', { className: 'text-xs italic text-gray-500 mt-1' }, 'Adopción lenta.')
+                            ),
+                            React.createElement('div', { className: 'bg-white p-3 rounded-lg shadow' },
+                                React.createElement('h5', { className: 'font-bold text-brand-secondary' }, 'KR3: Cumplimiento Legal'),
+                                React.createElement(ProgressBar, { current: 100, total: 100 }),
+                                React.createElement('p', { className: 'text-xs mt-2' }, React.createElement('span', { className: 'font-semibold' }, 'Progreso: '), '100%'),
+                                React.createElement('p', { className: 'text-xs' }, React.createElement('span', { className: 'font-semibold' }, 'Status: '), React.createElement('span', { className: 'text-green-600 font-bold' }, 'Logrado')),
+                                React.createElement('p', { className: 'text-xs italic text-gray-500 mt-1' }, 'Requerimientos cubiertos.')
+                            ),
+                            React.createElement('div', { className: 'bg-white p-3 rounded-lg shadow' },
+                                React.createElement('h5', { className: 'font-bold text-brand-accent' }, 'KR4: Aumentar Ventas'),
+                                React.createElement(ProgressBar, { current: 50, total: 100 }),
+                                React.createElement('p', { className: 'text-xs mt-2' }, React.createElement('span', { className: 'font-semibold' }, 'Progreso: '), '50%'),
+                                React.createElement('p', { className: 'text-xs' }, React.createElement('span', { className: 'font-semibold' }, 'Status: '), React.createElement('span', { className: 'text-yellow-600 font-bold' }, 'En Riesgo')),
+                                React.createElement('p', { className: 'text-xs italic text-gray-500 mt-1' }, 'Iniciativas en marcha.')
+                            )
+                        )
+                    ),
+                    React.createElement('p', { className: 'text-center text-gray-800 italic mt-4' }, 'Visibilidad de un vistazo sobre lo que más importa para el futuro del negocio.')
+                )
+            )
+          },
+          {
+            id: 26,
+            title: 'Propuesta: Dashboard de KPIs Operativos (Salud del Negocio)',
+            content: (
+              React.createElement('div', { className: 'text-sm' },
+                React.createElement('p', { className: "text-center text-gray-600 mb-4" }, "Monitoreo del \"Business as Usual\" durante el proyecto de transformación."),
+                React.createElement('div', { className: 'space-y-4' },
+                    React.createElement('div', { className: 'bg-gray-100 p-3 rounded-lg' },
+                        React.createElement('h4', { className: 'font-bold text-brand-dark text-base' }, 'KPIs de Proyecto y Empresa'),
+                        React.createElement('div', { className: 'flex justify-around mt-2' },
+                            React.createElement('div', { className: 'text-center' }, React.createElement('p', { className: 'font-semibold' }, 'EBITDA'), React.createElement('p', { className: 'text-green-600 font-bold' }, '21% (↑)')),
+                            React.createElement('div', { className: 'text-center' }, React.createElement('p', { className: 'font-semibold' }, 'Costo Proyecto'), React.createElement('p', { className: 'text-green-600 font-bold' }, '-5% vs Ppto')),
+                            React.createElement('div', { className: 'text-center' }, React.createElement('p', { className: 'font-semibold' }, 'NPS Interno'), React.createElement('p', { className: 'text-yellow-600 font-bold' }, '7.5 (↓)'))
+                        )
+                    ),
+                    React.createElement('div', { className: 'grid md:grid-cols-2 gap-4' },
+                        React.createElement('div', { className: 'bg-white p-3 rounded-lg border' },
+                            React.createElement('h5', { className: 'font-bold text-brand-secondary mb-2' }, 'Finanzas'),
+                            React.createElement('ul', { className: 'space-y-1' },
+                                React.createElement('li', { className: 'flex justify-between' }, React.createElement('span', null, 'Cierre Contable:'), React.createElement('span', { className: 'font-bold text-yellow-600' }, '12 días')),
+                                React.createElement('li', { className: 'flex justify-between' }, React.createElement('span', null, 'Días por Cobrar (DSO):'), React.createElement('span', { className: 'font-bold text-green-600' }, '40 días'))
+                            )
+                        ),
+                        React.createElement('div', { className: 'bg-white p-3 rounded-lg border' },
+                            React.createElement('h5', { className: 'font-bold text-brand-secondary mb-2' }, 'Ventas y Marketing'),
+                             React.createElement('ul', { className: 'space-y-1' },
+                                React.createElement('li', { className: 'flex justify-between' }, React.createElement('span', null, 'Tasa de Bateo:'), React.createElement('span', { className: 'font-bold text-yellow-600' }, '21%')),
+                                React.createElement('li', { className: 'flex justify-between' }, React.createElement('span', null, 'MQLs Generados:'), React.createElement('span', { className: 'font-bold text-green-600' }, '1,200/mes')),
+                                React.createElement('li', { className: 'flex justify-between' }, React.createElement('span', null, '% BD Depurada:'), React.createElement('span', { className: 'font-bold text-green-600' }, '98%'))
+                            )
+                        ),
+                        React.createElement('div', { className: 'bg-white p-3 rounded-lg border' },
+                            React.createElement('h5', { className: 'font-bold text-brand-secondary mb-2' }, 'Operaciones'),
+                            React.createElement('ul', { className: 'space-y-1' },
+                                React.createElement('li', { className: 'flex justify-between' }, React.createElement('span', null, 'Tasa Error Manual:'), React.createElement('span', { className: 'font-bold text-green-600' }, '2%')),
+                                React.createElement('li', { className: 'flex justify-between' }, React.createElement('span', null, 'Uptime Servicio:'), React.createElement('span', { className: 'font-bold text-green-600' }, '99.98%'))
+                            )
+                        ),
+                        React.createElement('div', { className: 'bg-white p-3 rounded-lg border' },
+                            React.createElement('h5', { className: 'font-bold text-brand-secondary mb-2' }, 'Recursos Humanos'),
+                            React.createElement('ul', { className: 'space-y-1' },
+                                React.createElement('li', { className: 'flex justify-between' }, React.createElement('span', null, 'Satisfacción Capacitación:'), React.createElement('span', { className: 'font-bold text-red-600' }, '55%')),
+                                React.createElement('li', { className: 'flex justify-between' }, React.createElement('span', null, 'Avance Plan Capacitación:'), React.createElement('span', { className: 'font-bold text-yellow-600' }, '70%'))
+                            )
+                        )
+                    )
+                ),
+                React.createElement('p', { className: 'text-center text-gray-800 italic mt-4' }, 'Un KPI en rojo justifica un OKR para mejorarlo (ej. Satisfacción o Tasa de Bateo).')
+              )
+            )
+          },
+          {
+            id: 27,
+            title: 'Esquema de Compensación Mixto: Fomentando el Éxito Integral',
+            content: (
+                React.createElement('div', { className: "w-full text-center text-sm" },
+                    React.createElement('p', { className: "mb-4 text-gray-600" }, "Este modelo equilibra los resultados de la empresa, la contribución individual y el impacto estratégico."),
+                    React.createElement('div', { className: "grid md:grid-cols-2 gap-4 text-left" },
+                        React.createElement('div', { className: "bg-blue-50 p-4 rounded-lg border border-blue-200" },
+                            React.createElement('h3', { className: "font-bold text-blue-800 text-base" }, "50% | Resultados de Empresa"),
+                            React.createElement('p', { className: "text-blue-700 mt-1" }, "Vinculado al logro de KPIs corporativos (ej. EBITDA, Crecimiento de Ingresos). Actúa como un ", React.createElement('span', { className: "font-semibold" }, "multiplicador"), " para la porción individual. Si la empresa no gana, nadie gana al 100%.")
+                        ),
+                         React.createElement('div', { className: "bg-teal-50 p-4 rounded-lg border border-teal-200" },
+                            React.createElement('h3', { className: "font-bold text-teal-800 text-base" }, "50% | Desempeño Individual"),
+                             React.createElement('p', { className: "text-teal-700 mt-1" },
+                                React.createElement('span', { className: "font-semibold block" }, "60% - Cumplimiento de KPIs de Rol:"), " El \"qué\". ¿Cumpliste con las métricas de tu trabajo diario?",
+                                React.createElement('span', { className: "font-semibold block mt-2" }, "40% - Evaluación de Competencias:"), " El \"cómo\". Colaboración, liderazgo, valores."
+                            )
+                        )
+                    ),
+                    React.createElement('div', { className: "mt-4 bg-yellow-50 p-4 rounded-lg border border-yellow-300" },
+                        React.createElement('h3', { className: "font-bold text-yellow-800 text-base" }, "Acelerador de Impacto (Discrecional)"),
+                        React.createElement('p', { className: "text-yellow-700 mt-1" }, "El impacto sobresaliente en un OKR estratégico clave no es parte de la fórmula, sino un ", React.createElement('span', { className: "font-semibold" }, "\"kicker\" o acelerador (+20%)"), " sobre el bono final. Reconoce y premia la ambición y los resultados extraordinarios.")
+                    )
+                )
+            )
+          },
+          {
+            id: 28,
+            title: 'Ejemplo Práctico de Compensación: Rol de RH en Proyecto ERP',
+            content: (
+                React.createElement('div', { className: "text-sm" },
+                    React.createElement('p', { className: "text-center text-gray-700 font-semibold mb-4 text-base" }, "Analista de RH (Gestión del Cambio) | Bono Base Trimestral: $7,500"),
+                    React.createElement('div', { className: "grid grid-cols-1 md:grid-cols-2 gap-4" },
+                        React.createElement('div', { className: "bg-red-50 p-4 rounded-lg border border-red-200" },
+                            React.createElement('h3', { className: "font-bold text-red-800 text-base mb-2" }, "Modelo Antiguo (Fórmula Directa)"),
+                            React.createElement('p', { className: "text-red-700" }, 'El bono se ata a: "Completar al 100% el plan de capacitación".'),
+                            React.createElement('ul', { className: "list-disc list-inside text-red-600 mt-2" },
+                                React.createElement('li', null, "90% de logro = $6,750"),
+                                React.createElement('li', null, "100% de logro = $7,500")
+                            ),
+                            React.createElement('p', { className: "italic text-xs text-gray-500 mt-3" }, "Incentivo: Hacer el plan más fácil para asegurar el 100%, sin importar si la gente aprende.")
+                        ),
+                        React.createElement('div', { className: "bg-green-50 p-4 rounded-lg border border-green-200 row-span-2" },
+                            React.createElement('h3', { className: "font-bold text-green-800 text-base mb-2" }, "Modelo Propuesto (Cálculo de Impacto)"),
+                            React.createElement('ol', { className: "space-y-2 text-green-700" },
+                                React.createElement('li', null, 
+                                    React.createElement('span', { className: "font-semibold" }, "1. Resultados Empresa (50%): "), 
+                                    "Meta EBITDA al 95%. Multiplicador: 0.95. ", 
+                                    React.createElement('br', null), "$3,750 x 0.95 = ", React.createElement('b', null, "$3,562.50")
+                                ),
+                                React.createElement('li', null, 
+                                    React.createElement('span', { className: "font-semibold" }, "2. Desempeño Individual (50%):"),
+                                    React.createElement('ul', { className: 'list-disc list-inside ml-4 text-xs' },
+                                        React.createElement('li', null, React.createElement('b', null, "KPIs (60%):"), " 100% plan capacitación, Satisfacción > 85% -> Cumplimiento excelente."),
+                                        React.createElement('li', null, React.createElement('b', null, "Competencias (40%):"), " Gestión del Cambio, Comunicación -> Fuerte.")
+                                    ),
+                                    "Evaluación del líder: 100%.", React.createElement('br', null), "$3,750 x 1.0 = ", React.createElement('b', null, "$3,750")
+                                ),
+                                React.createElement('li', null, React.createElement('span', { className: "font-semibold" }, "3. Bono Base Calculado: "), "$3,562.50 + $3,750 = ", React.createElement('b', null, "$7,312.50")),
+                                React.createElement('li', null, 
+                                    React.createElement('span', { className: "font-semibold" }, "4. Acelerador por OKR: "), 
+                                    "Logró 95% de satisfacción en la capacitación del ERP (superando la meta de su OKR de 90%), lo que fue crucial para la adopción del sistema (KR2 Empresa)."
+                                ),
+                                React.createElement('li', null, 
+                                    React.createElement('span', { className: "font-semibold" }, "5. Decisión de Liderazgo: "), 
+                                    "Se otorga un ", React.createElement('b', null, "kicker +20%"), " por impacto extraordinario."
+                                )
+                             ),
+                             React.createElement('div', { className: "mt-4 text-center bg-white p-2 rounded" },
+                                React.createElement('p', { className: "font-bold text-brand-dark" }, "Bono Final: "),
+                                React.createElement('p', { className: "text-lg font-bold text-brand-primary" }, "$7,312.50 + ($7,312.50 x 20%) = $8,775.00")
+                             )
+                        )
+                    ),
+                     React.createElement('p', { className: "col-span-1 md:col-span-2 mt-4 text-center text-gray-800 italic" }, "Se premia el desempeño sólido Y el impacto estratégico, sin penalizar la ambición.")
+                )
+            )
+          },
+          {
+            id: 29,
+            title: 'Calendario de Implementación: Q1 (Arranque Febrero)',
+            content: (
+              React.createElement('div', { className: "space-y-4 text-sm" },
+                React.createElement('div', { className: "p-3 bg-blue-50 border-l-4 border-blue-400" },
+                  React.createElement('h3', { className: "font-bold text-brand-secondary" }, "Febrero: Lanzamiento y Primer Ciclo"),
+                  React.createElement('ul', { className: "list-disc list-inside mt-1 text-gray-700" },
+                    React.createElement('li', null, React.createElement('b', null, "Semana 1 (1-7 Feb):"), " Kick-off general. Sesiones de definición de OKRs por departamento."),
+                    React.createElement('li', null, React.createElement('b', null, "Semana 2 (10-14 Feb):"), " Inicio de check-ins semanales (Lunes/Martes) para registrar avance de OKRs."),
+                    React.createElement('li', null, React.createElement('b', null, "Semana 4 (24-28 Feb):"), " Primera junta mensual de Dirección para evaluar KPIs operativos.")
+                  )
+                ),
+                React.createElement('div', { className: "p-3 bg-teal-50 border-l-4 border-teal-400" },
+                  React.createElement('h3', { className: "font-bold text-brand-accent" }, "Marzo y Abril: Ejecución y Cierre de Q1"),
+                   React.createElement('ul', { className: "list-disc list-inside mt-1 text-gray-700" },
+                    React.createElement('li', null, React.createElement('b', null, "Marzo:"), " Continuación de check-ins semanales y junta mensual de KPIs (última semana)."),
+                    React.createElement('li', null, React.createElement('b', null, "Semana 1-2 de Abril:"), " Sesiones de cierre y autocalificación de OKRs por departamento."),
+                    React.createElement('li', null, React.createElement('b', null, "Semana 3-4 de Abril:"), " Juntas de evaluación de desempeño individual (KPIs y competencias) y calibración de resultados.")
+                  )
+                ),
+                React.createElement('div', { className: "p-3 bg-green-50 border-l-4 border-green-500" },
+                  React.createElement('h3', { className: "font-bold text-green-800" }, "Mayo: Compensación y Planificación Q2"),
+                  React.createElement('ul', { className: "list-disc list-inside mt-1 text-gray-700" },
+                    React.createElement('li', { className: "font-bold" }, "15 de Mayo: Pago del bono correspondiente al Q1."),
+                    React.createElement('li', null, React.createElement('b', null, "Semana 3 (19-23 May):"), " Sesiones de aprendizaje de Q1 y definición de OKRs para Q2."),
+                    React.createElement('li', null, React.createElement('b', null, "Semana 4 (26-30 May):"), " Kick-off del ciclo Q2.")
+                  )
+                )
+              )
+            ),
+          },
+          {
+            id: 30,
+            title: 'Gracias',
+            content: (
+              React.createElement('div', { className: "text-center" },
+                React.createElement('h2', { className: "text-3xl font-bold text-brand-primary" }, "¿Preguntas?")
+              )
+            ),
+          },
+        ];
+
+        const App = () => {
+          const [currentSlide, setCurrentSlide] = useState(0);
+
+          const handleNext = useCallback(() => {
+            setCurrentSlide((prev) => (prev < slideData.length - 1 ? prev + 1 : prev));
+          }, []);
+
+          const handlePrev = useCallback(() => {
+            setCurrentSlide((prev) => (prev > 0 ? prev - 1 : prev));
+          }, []);
+          
+          const slide = slideData[currentSlide];
+
+          return (
+            React.createElement('div', { className: "min-h-screen bg-brand-light flex flex-col items-center justify-start p-4 sm:p-6 md:p-8 font-sans" },
+              React.createElement('div', { className: "w-full max-w-4xl my-auto" },
+                React.createElement('div', { className: "relative bg-white rounded-lg shadow-2xl flex flex-col" },
+                  React.createElement('div', { className: "px-8 sm:px-12 py-8 flex-grow min-h-[540px] flex flex-col justify-center" },
+                    React.createElement('div', { key: slide.id, className: "animate-fade-in" },
+                      React.createElement('h1', { className: "text-3xl md:text-4xl font-bold text-brand-dark mb-8 text-center" }, slide.title),
+                      React.createElement('div', { className: "text-base md:text-lg text-gray-700" }, slide.content)
+                    )
+                  ),
+                  React.createElement('div', { className: "sticky bottom-0 left-0 right-0 p-4 bg-white/70 backdrop-blur-sm border-t border-gray-100" },
+                    React.createElement(ProgressBar, { current: currentSlide + 1, total: slideData.length })
+                  )
+                ),
+                React.createElement('div', { className: "flex justify-between items-center mt-6" },
+                  React.createElement('div', { className: "text-sm text-gray-500" },
+                    `Diapositiva ${currentSlide + 1} de ${slideData.length}`
+                  ),
+                  React.createElement('div', { className: "flex space-x-4" },
+                    React.createElement('button', {
+                      onClick: handlePrev,
+                      disabled: currentSlide === 0,
+                      className: "px-6 py-2 bg-white rounded-md shadow-md text-brand-secondary hover:bg-gray-100 disabled:opacity-50 disabled:cursor-not-allowed transition-all flex items-center"
+                    },
+                      React.createElement(ArrowLeftIcon),
+                      React.createElement('span', { className: "ml-2" }, "Anterior")
+                    ),
+                    React.createElement('button', {
+                      onClick: handleNext,
+                      disabled: currentSlide === slideData.length - 1,
+                      className: "px-6 py-2 bg-brand-primary text-white rounded-md shadow-md hover:bg-brand-secondary disabled:opacity-50 disabled:cursor-not-allowed transition-all flex items-center"
+                    },
+                      React.createElement('span', { className: "mr-2" }, "Siguiente"),
+                      React.createElement(ArrowRightIcon)
+                    )
+                  )
+                )
+              ),
+              React.createElement('footer', { className: "text-center mt-8 text-gray-500 text-sm" },
+                  React.createElement('p', null, "Presentación generada para la Dirección")
+              )
+            )
+          );
+        };
+
+        const rootElement = document.getElementById('root');
+        if (!rootElement) {
+          throw new Error("Could not find root element to mount to");
+        }
+
+        const root = ReactDOM.createRoot(rootElement);
+        root.render(React.createElement(React.StrictMode, null, React.createElement(App)));
+
+    </script>
+</body>
+</html>
